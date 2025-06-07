@@ -1,0 +1,27 @@
+[package]
+name = "cosmic-ext-applet-weather"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0"
+authors = ["rwxroot <rwxroot@proton.me>"]
+homepage = "https://github.com/cosmic-utils/cosmic-ext-applet-weather/"
+repository = "https://github.com/cosmic-utils/cosmic-ext-applet-weather.git"
+
+[profile.release]
+lto = "fat"
+
+[dependencies]
+libcosmic = { git = "https://github.com/pop-os/libcosmic", default-features = false, features = [
+	"applet",
+] }
+reqwest = { version = "0.12.19", default-features = false, features = [
+	"json",
+	"rustls-tls",
+] }
+serde = "1.0.219"
+serde_derive = "1.0.219"
+tracing = { version = "0.1.41", default-features = false, features = ["log"] }
+tracing-subscriber = { version = "0.3.19", default-features = false, features = [
+	"ansi",
+	"env-filter",
+] }
