@@ -95,7 +95,7 @@ impl cosmic::Application for Weather {
 
     fn view(&self) -> cosmic::Element<Message> {
         let icon_name = match Local::now().hour() {
-            6..19 => SUN_ICON,
+            6..29 => SUN_ICON,
             _ => MOON_ICON,
         };
 

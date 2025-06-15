@@ -8,6 +8,10 @@
     <img alt="Applet Screenshot" src="https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_2.png">
 </p>
 
+<p align="center">
+    <img alt="Applet Screenshot" src="https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_3.png">
+</p>
+
 ## Installation
 
 The applet can be installed using the following steps:
