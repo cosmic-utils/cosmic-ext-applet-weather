@@ -34,16 +34,18 @@ The applet currently does not have a graphical interface for setting the coordin
 cd ~/.config/cosmic/io.github.cosmic-utils.cosmic-ext-applet-weather/v1/
 ```
 
-Add latitude in the `latitude` file:
+Create and add latitude in the `latitude` file:
 
 ```
-12.123163
+touch latitude
+echo "12.123163" > latitude
 ```
 
-Add longitude in the `longitude` file:
+Similarly for longitude:
 
 ```
-23.811234
+touch longitude
+echo "23.811234" > longitude
 ```
 
 The applet refreshes every minute, and the new coordinates will be used only at that time. As a workaround, simply remove and re-add the applet in the panel settings for an instant refresh.
