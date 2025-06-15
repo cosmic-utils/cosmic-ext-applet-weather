@@ -6,6 +6,7 @@ const CONFIG_VERSION: u64 = 1;
 
 pub const APP_ID: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather";
 pub const SUN_ICON: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather-sun-symbolic";
+pub const MOON_ICON: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather-moon-symbolic";
 
 #[derive(Default, Debug, CosmicConfigEntry)]
 pub struct WeatherConfig {

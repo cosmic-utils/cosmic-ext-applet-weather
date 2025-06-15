@@ -11,10 +11,11 @@ repository = "https://github.com/cosmic-utils/cosmic-ext-applet-weather.git"
 lto = "fat"
 
 [dependencies]
+chrono = { version = "0.4.41",default-features = false }
 libcosmic = { git = "https://github.com/pop-os/libcosmic", default-features = false, features = [
 	"applet",
 ] }
-reqwest = { version = "0.12.19", default-features = false, features = [
+reqwest = { version = "0.12.20", default-features = false, features = [
 	"json",
 	"rustls-tls",
 ] }

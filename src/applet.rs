@@ -1,7 +1,9 @@
 use std::time::Duration;
 
+use chrono::{Local, Timelike};
+
 use crate::{
-    config::{APP_ID, SUN_ICON, WeatherConfig},
+    config::{APP_ID, MOON_ICON, SUN_ICON, WeatherConfig},
     weather::get_location_forecast,
 };
 
@@ -92,8 +94,13 @@ impl cosmic::Application for Weather {
     }
 
     fn view(&self) -> cosmic::Element<Message> {
+        let icon_name = match Local::now().hour() {
+            6..19 => SUN_ICON,
+            _ => MOON_ICON,
+        };
+
         let icon = cosmic::iced_widget::row![
-            cosmic::widget::icon::from_name(SUN_ICON)
+            cosmic::widget::icon::from_name(icon_name)
                 .size(14)
                 .symbolic(true),
         ]
