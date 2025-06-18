@@ -19,6 +19,9 @@ struct Weather {
 
 impl Weather {
     fn update_weather_data(&mut self) -> cosmic::app::Task<Message> {
+        // Update config
+        self.config = WeatherConfig::config();
+
         cosmic::Task::perform(
             get_location_forecast(self.config.latitude, self.config.longitude),
             |result| match result {
@@ -31,10 +34,6 @@ impl Weather {
                 }
             },
         )
-    }
-
-    fn update_config(&mut self) {
-        self.config = WeatherConfig::config();
     }
 }
 
@@ -83,10 +82,7 @@ impl cosmic::Application for Weather {
         let mut tasks = vec![];
 
         match message {
-            Message::Tick => {
-                self.update_config();
-                tasks.push(self.update_weather_data());
-            }
+            Message::Tick => tasks.push(self.update_weather_data()),
             Message::UpdateTemperature(temperature) => self.temperature = temperature,
         }
 
@@ -95,7 +91,7 @@ impl cosmic::Application for Weather {
 
     fn view(&self) -> cosmic::Element<Message> {
         let icon_name = match Local::now().hour() {
-            6..29 => SUN_ICON,
+            6..18 => SUN_ICON,
             _ => MOON_ICON,
         };
 
