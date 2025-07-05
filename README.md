@@ -30,6 +30,10 @@ sudo just install
 
 The applet currently does not have a graphical interface for setting the coordinates to fetch and display the temperature for a specific location. To set the current location, specify the latitude and longitude in the configuration files.
 
+
+_Use IP-API web service (https://ip-api.com/docs/api:json) to retrieve approximate coordinates or alternatively, use mapping platforms like Google Maps to obtain accurate latitude and longitude._
+
+
 ```sh
 cd ~/.config/cosmic/io.github.cosmic-utils.cosmic-ext-applet-weather/v1/
 ```
