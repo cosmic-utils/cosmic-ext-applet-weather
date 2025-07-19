@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.cosmic_utils.weather-applet</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <project_group>COSMIC</project_group>
+  <developer_name>rwxroot</developer_name>
+  <update_contact>rwxroot@proton.me</update_contact>
+  <name>Simple Weather Monitor</name>
+  <url type="homepage">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
+  <url type="bugtracker">https://github.com/cosmic-utils/cosmic-ext-applet-weather/issues</url>
+  <url type="contribute">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
+  <content_rating type="oars-1.1" />
+  <branding>
+    <color type="primary" scheme_preference="light">#fffffe</color>
+    <color type="primary" scheme_preference="dark">#2b2b2b</color>
+  </branding>
+  <summary>A Customizable System Monitor applet for COSMIC</summary>
+  <description>
+    <p>A lightweight hardware monitoring applet for the COSMIC desktop environment with UI for customization. Shows information on CPU, GPU, network, memory, and disk usage.</p>
+  </description>
+  <icon type="stock">io.github.cosmic_utils.weather-applet.svg</icon>
+  <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_1.png</image>
+      <caption>The applet sitting in the top center of the panel</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_2.png</image>
+      <caption>An individual view of the applet showing daytime weather</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_3.png</image>
+      <caption>An individual view of the applet showing nighttime weather</caption>
+    </screenshot>
+  </screenshots>
+  <provides>
+    <id>com.system76.CosmicApplet</id>
+    <binaries>
+      <binary>cosmic-applet-weather</binary>
+    </binaries>
+  </provides>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <recommends>
+    <internet>always</internet>
+  </recommends>
+</component>
