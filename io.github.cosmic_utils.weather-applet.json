@@ -4,25 +4,25 @@
   "runtime-version": "24.08",
   "sdk": "org.freedesktop.Sdk",
   "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
-  "command": "cosmic-applet-weather",
+  "command": "cosmic-ext-applet-weather",
   "finish-args": [
     "--share=network",
+    "--filesystem=xdg-config/cosmic:rw",
+    "--talk-name=com.system76.CosmicSettingsDaemon",
     "--socket=wayland",
-    "--socket=fallback-x11",
     "--device=dri",
-    "--filesystem=xdg-config/cosmic:create",
     "--talk-name=org.freedesktop.portal.Desktop",
     "--talk-name=org.freedesktop.portal.Location"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/rust-stable/bin",
     "env": {
-      "CARGO_HOME": "/run/build/cosmic-applet-weather/cargo"
+      "CARGO_HOME": "/run/build/cosmic-ext-applet-weather/cargo"
     }
   },
   "modules": [
     {
-      "name": "cosmic-applet-weather",
+      "name": "cosmic-ext-applet-weather",
       "buildsystem": "simple",
       "build-commands": [
         "cargo --offline fetch --manifest-path Cargo.toml --verbose",

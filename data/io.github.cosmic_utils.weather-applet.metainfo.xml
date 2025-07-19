@@ -38,7 +38,7 @@
   <provides>
     <id>com.system76.CosmicApplet</id>
     <binaries>
-      <binary>cosmic-applet-weather</binary>
+      <binary>cosmic-ext-applet-weather</binary>
     </binaries>
   </provides>
   <categories>
