@@ -1,1 +1,5 @@
 /target
+
+# Flatpak stuff
+cargo-sources.json
+.flatpak-builder

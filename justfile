@@ -4,7 +4,7 @@ build:
 	cargo build --release
 
 export NAME := 'cosmic-ext-applet-weather'
-export APPID := 'io.github.cosmic-utils.' + NAME
+export APPID := 'io.github.cosmic_utils.weather-applet'
 
 cargo-target-dir := env('CARGO_TARGET_DIR', 'target')
 bin-src := cargo-target-dir / 'release' / NAME
@@ -18,15 +18,15 @@ share-dst := base-dir / 'share'
 bin-dst := base-dir / 'bin' / NAME
 desktop-dst := share-dst / 'applications' / APPID + '.desktop'
 icon-dst := share-dst / 'icons/hicolor/scalable/apps' / APPID + '-symbolic.svg'
-applet-sun-icon-dst := share-dst / 'icons/hicolor/scalable/apps' /APPID + '-sun-symbolic.svg'
-applet-moon-icon-dst := share-dst / 'icons/hicolor/scalable/apps' /APPID + '-moon-symbolic.svg'
+applet-sun-icon-dst := share-dst / 'icons/hicolor/scalable/apps' /APPID + '-symbolic-sun.svg'
+applet-moon-icon-dst := share-dst / 'icons/hicolor/scalable/apps' /APPID + '-symbolic-moon.svg'
 
 install:
 	install -Dm0755 {{ bin-src }} {{ bin-dst }}
-	install -Dm0644 data/cosmic-ext-applet-weather.svg {{ icon-dst }}
-	install -Dm0644 data/cosmic-ext-applet-weather.desktop {{ desktop-dst }}
-	install -Dm0644 data/cosmic-ext-applet-weather-sun.svg {{ applet-sun-icon-dst }}
-	install -Dm0644 data/cosmic-ext-applet-weather-moon.svg {{ applet-moon-icon-dst }}
+	install -Dm0644 data/io.github.cosmic_utils.weather-applet-symbolic.svg {{ icon-dst }}
+	install -Dm0644 data/io.github.cosmic_utils.weather-applet.desktop {{ desktop-dst }}
+	install -Dm0644 data/io.github.cosmic_utils.weather-applet-symbolic-sun.svg {{ applet-sun-icon-dst }}
+	install -Dm0644 data/io.github.cosmic_utils.weather-applet-symbolic-moon.svg {{ applet-moon-icon-dst }}
 
 uninstall:
 	rm {{ bin-dst }}

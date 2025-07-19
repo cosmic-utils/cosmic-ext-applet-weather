@@ -4,9 +4,9 @@ use cosmic::cosmic_config::{
 
 const CONFIG_VERSION: u64 = 1;
 
-pub const APP_ID: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather";
-pub const SUN_ICON: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather-sun-symbolic";
-pub const MOON_ICON: &str = "io.github.cosmic-utils.cosmic-ext-applet-weather-moon-symbolic";
+pub const APP_ID: &str = "io.github.cosmic_utils.weather-applet-symbolic";
+pub const SUN_ICON: &str = "io.github.cosmic_utils.weather-applet-symbolic-sun";
+pub const MOON_ICON: &str = "io.github.cosmic_utils.weather-applet-symbolic-moon";
 
 #[derive(Default, Debug, CosmicConfigEntry)]
 pub struct WeatherConfig {
