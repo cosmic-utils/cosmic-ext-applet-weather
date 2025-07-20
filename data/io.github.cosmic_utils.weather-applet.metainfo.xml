@@ -19,7 +19,7 @@
   <description>
     <p>A lightweight hardware monitoring applet for the COSMIC desktop environment with UI for customization. Shows information on CPU, GPU, network, memory, and disk usage.</p>
   </description>
-  <icon type="stock">io.github.cosmic_utils.weather-applet.svg</icon>
+  <icon type="stock">io.github.cosmic_utils.weather-applet-symbolic.svg</icon>
   <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
   <screenshots>
     <screenshot type="default">
