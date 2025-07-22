@@ -6,7 +6,7 @@
   <project_group>COSMIC</project_group>
   <developer_name>rwxroot</developer_name>
   <update_contact>rwxroot@proton.me</update_contact>
-  <name>Simple Weather Monitor</name>
+  <name>Weather</name>
   <url type="homepage">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
   <url type="bugtracker">https://github.com/cosmic-utils/cosmic-ext-applet-weather/issues</url>
   <url type="contribute">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
@@ -15,9 +15,9 @@
     <color type="primary" scheme_preference="light">#fffffe</color>
     <color type="primary" scheme_preference="dark">#2b2b2b</color>
   </branding>
-  <summary>A Customizable System Monitor applet for COSMIC</summary>
+  <summary>A simple weather viewing applet for COSMIC</summary>
   <description>
-    <p>A lightweight hardware monitoring applet for the COSMIC desktop environment with UI for customization. Shows information on CPU, GPU, network, memory, and disk usage.</p>
+    <p>Keep an eye on the weather in your area.</p>
   </description>
   <icon type="stock">io.github.cosmic_utils.weather-applet-symbolic.svg</icon>
   <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
