@@ -23,15 +23,15 @@
   <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_1.png</image>
+      <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_1.png</image>
       <caption>The applet sitting in the top center of the panel</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_2.png</image>
+      <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_2.png</image>
       <caption>An individual view of the applet showing daytime weather</caption>
     </screenshot>
     <screenshot>
-      <image>https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_3.png</image>
+      <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_3.png</image>
       <caption>An individual view of the applet showing nighttime weather</caption>
     </screenshot>
   </screenshots>
