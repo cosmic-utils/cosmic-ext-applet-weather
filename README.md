@@ -35,7 +35,7 @@ _Use IP-API web service (https://ip-api.com/docs/api:json) to retrieve approxima
 
 
 ```sh
-cd ~/.config/cosmic/io.github.cosmic-utils.cosmic-ext-applet-weather/v1/
+cd ~/.config/cosmic/io.github.cosmic_utils.weather-applet/v1/
 ```
 
 Create and add latitude in the `latitude` file:
