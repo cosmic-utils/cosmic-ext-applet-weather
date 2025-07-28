@@ -1,6 +1,8 @@
 use reqwest::header;
 use serde::Deserialize;
 
+use crate::config::APP_ID;
+
 #[derive(Deserialize)]
 pub struct WeatherApiResponse {
     properties: Properties,
@@ -87,15 +89,17 @@ struct Next12HoursDetails {
     precipitation_amount: f64,
 }
 
-pub async fn get_location_forecast(latitude: f64, longitude: f64) -> Result<f64, reqwest::Error> {
+pub async fn get_location_forecast(
+    latitude: String,
+    longitude: String,
+) -> Result<f64, reqwest::Error> {
     let url = format!(
-        "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={}&lon={}",
-        latitude, longitude
+        "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={latitude}&lon={longitude}",
     );
 
     let request_builder = reqwest::Client::new().get(url).header(
         header::USER_AGENT,
-        "io.github.cosmic-utils.cosmic-ext-applet-weather",
+        APP_ID,
     );
 
     let response = request_builder.send().await?;
