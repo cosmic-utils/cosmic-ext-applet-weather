@@ -190,22 +190,26 @@ impl cosmic::Application for Weather {
         let data = cosmic::Element::from(cosmic::iced_widget::row![icon, temperature].spacing(4));
         let button = cosmic::widget::button::custom(data)
             .class(cosmic::theme::Button::AppletIcon)
-            .on_press(Message::ToggleWindow);
+            .on_press_down(Message::ToggleWindow);
 
         cosmic::widget::autosize::autosize(button, cosmic::widget::Id::unique()).into()
     }
 
     fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<Message> {
-        let latitude_input = cosmic::widget::text_input("Latitude", &self.latitude)
-            .on_input(Message::UpdateLatitude)
-            .width(cosmic::iced::Length::Fill);
-        let longitude_input = cosmic::widget::text_input("Longitude", &self.longitude)
-            .on_input(Message::UpdateLongitude)
-            .width(cosmic::iced::Length::Fill);
-
-        let coordinates_input =
-            cosmic::iced_widget::row![latitude_input, longitude_input].spacing(4);
-
+        let latitude_row = cosmic::iced_widget::column![
+            cosmic::widget::text("Latitude"),
+            cosmic::widget::text_input("Latitude", &self.latitude)
+                .on_input(Message::UpdateLatitude)
+                .width(cosmic::iced::Length::Fill)
+        ]
+        .spacing(4);
+        let longitude_row = cosmic::iced_widget::column![
+            cosmic::widget::text("Longitude"),
+            cosmic::widget::text_input("Longitude", &self.longitude)
+                .on_input(Message::UpdateLongitude)
+                .width(cosmic::iced::Length::Fill)
+        ]
+        .spacing(4);
         let fahrenheit_toggler = cosmic::iced_widget::row![
             cosmic::widget::text("Switch to fahrenheit?"),
             cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
@@ -213,10 +217,12 @@ impl cosmic::Application for Weather {
         ];
 
         let data = cosmic::iced_widget::column![
-            cosmic::applet::padded_control(coordinates_input),
+            cosmic::applet::padded_control(latitude_row),
+            cosmic::applet::padded_control(longitude_row),
             cosmic::applet::padded_control(cosmic::widget::divider::horizontal::default()),
             cosmic::applet::padded_control(fahrenheit_toggler)
-        ];
+        ]
+        .padding([16, 0]);
 
         self.core
             .applet
