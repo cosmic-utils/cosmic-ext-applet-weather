@@ -54,6 +54,7 @@ impl Weather {
 pub enum Message {
     Tick,
     ToggleWindow,
+    PopupClosed(cosmic::iced::window::Id),
     UpdateTemperature(f64),
     UpdateLatitude(String),
     UpdateLongitude(String),
@@ -78,7 +79,7 @@ impl cosmic::Application for Weather {
         (
             Self {
                 core,
-                popup: Default::default(),
+                popup: None,
                 config: flags.config,
                 config_handler: flags.config_handler,
                 temperature: 0.0,
@@ -102,16 +103,27 @@ impl cosmic::Application for Weather {
         cosmic::iced::time::every(Duration::from_secs(60)).map(|_| Message::Tick)
     }
 
-    fn update(&mut self, message: Message) -> cosmic::app::Task<Self::Message> {
-        let mut tasks = vec![];
+    fn style(&self) -> Option<cosmic::iced_runtime::Appearance> {
+        Some(cosmic::applet::style())
+    }
 
+    fn on_close_requested(&self, id: cosmic::iced::window::Id) -> Option<Message> {
+        Some(Message::PopupClosed(id))
+    }
+
+    fn update(&mut self, message: Message) -> cosmic::app::Task<Self::Message> {
         match message {
-            Message::Tick => tasks.push(self.update_weather_data()),
+            Message::UpdateTemperature(value) => {
+                self.temperature = value;
+            }
+            Message::Tick => {
+                return self.update_weather_data();
+            }
             Message::ToggleWindow => {
                 if let Some(id) = self.popup.take() {
-                    tasks.push(
-                        cosmic::iced::platform_specific::shell::commands::popup::destroy_popup(id),
-                    )
+                    return cosmic::iced::platform_specific::shell::commands::popup::destroy_popup(
+                        id,
+                    );
                 } else {
                     let new_id = cosmic::iced::window::Id::unique();
                     self.popup.replace(new_id);
@@ -124,17 +136,18 @@ impl cosmic::Application for Weather {
                         None,
                     );
 
-                    tasks.push(
-                        cosmic::iced::platform_specific::shell::commands::popup::get_popup(
-                            popup_settings,
-                        ),
-                    )
+                    return cosmic::iced::platform_specific::shell::commands::popup::get_popup(
+                        popup_settings,
+                    );
                 }
             }
-            Message::UpdateTemperature(value) => self.temperature = value,
+            Message::PopupClosed(id) => {
+                if self.popup.as_ref() == Some(&id) {
+                    self.popup = None;
+                }
+            }
             Message::UpdateLatitude(value) => {
                 self.latitude = value.to_string();
-                tasks.push(self.update_weather_data());
 
                 if let Some(handler) = &self.config_handler {
                     if let Err(error) = self
@@ -144,10 +157,11 @@ impl cosmic::Application for Weather {
                         tracing::error!("{error}")
                     }
                 }
+
+                return self.update_weather_data();
             }
             Message::UpdateLongitude(value) => {
                 self.longitude = value.to_string();
-                tasks.push(self.update_weather_data());
 
                 if let Some(handler) = &self.config_handler {
                     if let Err(error) = self
@@ -157,6 +171,8 @@ impl cosmic::Application for Weather {
                         tracing::error!("{error}")
                     }
                 }
+
+                return self.update_weather_data();
             }
             Message::ToggleFahrenheit(value) => {
                 self.use_fahrenheit = value;
@@ -167,9 +183,9 @@ impl cosmic::Application for Weather {
                     }
                 }
             }
-        }
+        };
 
-        cosmic::Task::batch(tasks)
+        cosmic::Task::none()
     }
 
     fn view(&self) -> cosmic::Element<Message> {
