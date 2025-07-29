@@ -211,7 +211,7 @@ impl cosmic::Application for Weather {
         ]
         .spacing(4);
         let fahrenheit_toggler = cosmic::iced_widget::row![
-            cosmic::widget::text("Switch to fahrenheit?"),
+            cosmic::widget::text("Switch to Fahrenheit?"),
             cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
             cosmic::widget::toggler(self.use_fahrenheit).on_toggle(Message::ToggleFahrenheit),
         ];
