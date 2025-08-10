@@ -1,3 +1,7 @@
+pub mod applet;
+pub mod config;
+pub mod weather;
+
 fn main() -> cosmic::iced::Result {
     // Initialize logging
     tracing_subscriber::fmt()
@@ -6,5 +10,5 @@ fn main() -> cosmic::iced::Result {
 
     tracing::info!("Starting weather applet");
 
-    cosmic_ext_applet_weather::run()
+    applet::run()
 }
