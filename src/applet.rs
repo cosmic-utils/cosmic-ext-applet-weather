@@ -149,13 +149,12 @@ impl cosmic::Application for Weather {
             Message::UpdateLatitude(value) => {
                 self.latitude = value.to_string();
 
-                if let Some(handler) = &self.config_handler {
-                    if let Err(error) = self
+                if let Some(handler) = &self.config_handler
+                    && let Err(error) = self
                         .config
                         .set_latitude(handler, value.parse::<f64>().unwrap_or_default())
-                    {
-                        tracing::error!("{error}")
-                    }
+                {
+                    tracing::error!("{error}")
                 }
 
                 return self.update_weather_data();
@@ -163,13 +162,12 @@ impl cosmic::Application for Weather {
             Message::UpdateLongitude(value) => {
                 self.longitude = value.to_string();
 
-                if let Some(handler) = &self.config_handler {
-                    if let Err(error) = self
+                if let Some(handler) = &self.config_handler
+                    && let Err(error) = self
                         .config
                         .set_longitude(handler, value.parse::<f64>().unwrap_or_default())
-                    {
-                        tracing::error!("{error}")
-                    }
+                {
+                    tracing::error!("{error}")
                 }
 
                 return self.update_weather_data();
@@ -177,10 +175,10 @@ impl cosmic::Application for Weather {
             Message::ToggleFahrenheit(value) => {
                 self.use_fahrenheit = value;
 
-                if let Some(handler) = &self.config_handler {
-                    if let Err(error) = self.config.set_use_fahrenheit(handler, value) {
-                        tracing::error!("{error}")
-                    }
+                if let Some(handler) = &self.config_handler
+                    && let Err(error) = self.config.set_use_fahrenheit(handler, value)
+                {
+                    tracing::error!("{error}")
                 }
             }
         };
@@ -188,7 +186,7 @@ impl cosmic::Application for Weather {
         cosmic::Task::none()
     }
 
-    fn view(&self) -> cosmic::Element<Message> {
+    fn view(&self) -> cosmic::Element<'_, Message> {
         let icon_name = match Local::now().hour() {
             6..18 => SUN_ICON,
             _ => MOON_ICON,
@@ -211,7 +209,7 @@ impl cosmic::Application for Weather {
         cosmic::widget::autosize::autosize(button, cosmic::widget::Id::unique()).into()
     }
 
-    fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<Message> {
+    fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<'_, Message> {
         let latitude_row = cosmic::iced_widget::column![
             cosmic::widget::text("Latitude"),
             cosmic::widget::text_input("Latitude", &self.latitude)
