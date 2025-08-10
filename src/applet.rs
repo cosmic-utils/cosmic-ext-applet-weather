@@ -4,6 +4,7 @@ use chrono::{Local, Timelike};
 
 use crate::{
     config::{APP_ID, Flags, MOON_ICON, SUN_ICON, WeatherConfig, flags},
+    fl,
     weather::get_location_forecast,
 };
 
@@ -211,21 +212,21 @@ impl cosmic::Application for Weather {
 
     fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<'_, Message> {
         let latitude_row = cosmic::iced_widget::column![
-            cosmic::widget::text("Latitude"),
-            cosmic::widget::text_input("Latitude", &self.latitude)
+            cosmic::widget::text(fl!("latitude")),
+            cosmic::widget::text_input(fl!("latitude"), &self.latitude)
                 .on_input(Message::UpdateLatitude)
                 .width(cosmic::iced::Length::Fill)
         ]
         .spacing(4);
         let longitude_row = cosmic::iced_widget::column![
-            cosmic::widget::text("Longitude"),
-            cosmic::widget::text_input("Longitude", &self.longitude)
+            cosmic::widget::text(fl!("longitude")),
+            cosmic::widget::text_input(fl!("longitude"), &self.longitude)
                 .on_input(Message::UpdateLongitude)
                 .width(cosmic::iced::Length::Fill)
         ]
         .spacing(4);
         let fahrenheit_toggler = cosmic::iced_widget::row![
-            cosmic::widget::text("Switch to Fahrenheit?"),
+            cosmic::widget::text(fl!("fahrenheit-toggle")),
             cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
             cosmic::widget::toggler(self.use_fahrenheit).on_toggle(Message::ToggleFahrenheit),
         ];
