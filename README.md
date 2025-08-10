@@ -18,6 +18,20 @@
 
 ## Installation
 
+### Flatpak
+
+Depending on how you've installed COSMIC Desktop, the Weather applet may show up in your app store by default. In COSMIC Store it should be under the "COSMIC Applets" category.
+
+If the applet does not show up in your app store, you'll need to add `cosmic-flatpak` as a source:
+
+```sh
+flatpak remote-add --if-not-exists --user cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo
+```
+
+Then, proceed to your preferred app store and search for Weather applet.
+
+### Manual
+
 The applet can be installed using the following steps:
 
 ```sh
@@ -35,7 +49,6 @@ sudo just install
 The applet provides a graphical interface for entering coordinates and toggling the Fahrenheit scale. For manual configuration, follow the steps below.
 
 _Use the IP-API web service (https://ip-api.com/docs/api:json) to retrieve approximate coordinates, or alternatively, use mapping platforms like Google Maps to obtain accurate latitude and longitude._
-
 
 ```sh
 cd ~/.config/cosmic/io.github.cosmic_utils.weather-applet/v1/
