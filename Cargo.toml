@@ -12,7 +12,7 @@ lto = "fat"
 opt-level = 3
 
 [dependencies]
-chrono = { version = "0.4.41", default-features = false }
+chrono = { version = "0.4.42", default-features = false }
 i18n-embed = { version = "0.16.0", default-features = false, features = [
 	"rust-embed",
 	"fluent-system",
@@ -22,14 +22,14 @@ i18n-embed-fl = { version = "0.10.0", default-features = false }
 libcosmic = { git = "https://github.com/pop-os/libcosmic", default-features = false, features = [
 	"applet",
 ] }
-reqwest = { version = "0.12.22", default-features = false, features = [
+reqwest = { version = "0.12.23", default-features = false, features = [
 	"json",
 	"rustls-tls",
 ] }
 rust-embed = { version = "8.7.2", default-features = false }
 serde = "1.0.219"
 tracing = { version = "0.1.41", default-features = false, features = ["log"] }
-tracing-subscriber = { version = "0.3.19", default-features = false, features = [
+tracing-subscriber = { version = "0.3.20", default-features = false, features = [
 	"ansi",
 	"env-filter",
 ] }
