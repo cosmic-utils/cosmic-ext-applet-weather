@@ -15,28 +15,28 @@
     <color type="primary" scheme_preference="light">#fffffe</color>
     <color type="primary" scheme_preference="dark">#2b2b2b</color>
   </branding>
-  <summary>A simple weather viewing applet for COSMIC</summary>
+  <summary>Local weather conditions for COSMIC panel</summary>
   <description>
-    <p>Keep an eye on the weather in your area.</p>
+    <p>Stay informed about current weather conditions from your COSMIC panel.</p>
   </description>
   <icon type="stock">io.github.cosmic_utils.weather-applet-symbolic.svg</icon>
   <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_1.png</image>
-      <caption>The applet in the top centre of the panel</caption>
+      <caption>Weather information integrated into the COSMIC panel</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_2.png</image>
-      <caption>An individual view of the applet showing daytime weather</caption>
+      <caption>Current weather view during day</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_3.png</image>
-      <caption>An individual view of the applet showing night time weather</caption>
+      <caption>Current weather view during night</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_4.png</image>
-      <caption>The applet GUI</caption>
+      <caption>Weather applet configuration and settings panel</caption>
     </screenshot>
   </screenshots>
   <provides>
@@ -47,8 +47,9 @@
   </provides>
   <categories>
     <category>Utility</category>
+    <category>Network</category>
   </categories>
-  <recommends>
+  <requires>
     <internet>always</internet>
-  </recommends>
+  </requires>
 </component>
