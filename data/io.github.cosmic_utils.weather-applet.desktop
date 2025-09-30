@@ -1,7 +1,9 @@
 [Desktop Entry]
 Name=Simple Weather Monitor
+Name[cs]=Jednoduchý monitor počasí
 Name[es]=Monitor meteorológico simple
 Keywords=Cosmic;Iced;applet;weather;monitor;
+Keywords[cs]=Cosmic;Iced;applet;weather;monitor;teploty;
 Keywords[es]=Cosmic;Iced;applet;tiempo;monitor;temperatura;
 Categories=Cosmic;Iced;
 

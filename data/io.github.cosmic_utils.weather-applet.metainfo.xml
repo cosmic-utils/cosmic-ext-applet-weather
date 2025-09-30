@@ -7,6 +7,7 @@
   <developer_name>rwxroot</developer_name>
   <update_contact>rwxroot@proton.me</update_contact>
   <name>Weather</name>
+  <name xml:lang="cs">Počasí</name>
   <url type="homepage">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
   <url type="bugtracker">https://github.com/cosmic-utils/cosmic-ext-applet-weather/issues</url>
   <url type="contribute">https://github.com/cosmic-utils/cosmic-ext-applet-weather</url>
@@ -16,8 +17,10 @@
     <color type="primary" scheme_preference="dark">#2b2b2b</color>
   </branding>
   <summary>Local weather conditions for COSMIC panel</summary>
+  <summary xml:lang="cs">Počasí ve vaší oblasti pro panel COSMIC</summary>
   <description>
     <p>Stay informed about current weather conditions from your COSMIC panel.</p>
+    <p xml:lang="cs">Nechte se informovat o aktuálním počasí ve vaší oblasti z panelu COSMIC.</p>
   </description>
   <icon type="stock">io.github.cosmic_utils.weather-applet-symbolic.svg</icon>
   <launchable type="desktop-id">io.github.cosmic_utils.weather-applet.desktop</launchable>
