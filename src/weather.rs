@@ -97,10 +97,9 @@ pub async fn get_location_forecast(
         "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={latitude}&lon={longitude}",
     );
 
-    let request_builder = reqwest::Client::new().get(url).header(
-        header::USER_AGENT,
-        APP_ID,
-    );
+    let request_builder = reqwest::Client::new()
+        .get(url)
+        .header(header::USER_AGENT, APP_ID);
 
     let response = request_builder.send().await?;
     let data = response.json::<WeatherApiResponse>().await?;
