@@ -188,21 +188,28 @@ impl cosmic::Application for Weather {
     }
 
     fn view(&self) -> cosmic::Element<'_, Message> {
-        let icon_name = match Local::now().hour() {
+        let icon = cosmic::widget::icon::from_name(match Local::now().hour() {
             6..18 => SUN_ICON,
             _ => MOON_ICON,
+        })
+        .size(14)
+        .symbolic(true);
+        let temperature = cosmic::iced_widget::text(self.format_temperature());
+
+        let data = if self.core.applet.is_horizontal() {
+            cosmic::Element::from(
+                cosmic::iced_widget::row![icon, temperature]
+                    .align_y(cosmic::iced::alignment::Vertical::Center)
+                    .spacing(4),
+            )
+        } else {
+            cosmic::Element::from(
+                cosmic::iced_widget::column![icon, temperature]
+                    .align_x(cosmic::iced::alignment::Horizontal::Center)
+                    .spacing(4),
+            )
         };
 
-        let icon = cosmic::iced_widget::row![
-            cosmic::widget::icon::from_name(icon_name)
-                .size(14)
-                .symbolic(true),
-        ]
-        .padding([3, 0, 0, 0]);
-        let temperature =
-            cosmic::iced_widget::row![cosmic::iced_widget::text(self.format_temperature())];
-
-        let data = cosmic::Element::from(cosmic::iced_widget::row![icon, temperature].spacing(4));
         let button = cosmic::widget::button::custom(data)
             .class(cosmic::theme::Button::AppletIcon)
             .on_press_down(Message::ToggleWindow);
