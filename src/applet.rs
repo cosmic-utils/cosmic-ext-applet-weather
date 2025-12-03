@@ -192,21 +192,23 @@ impl cosmic::Application for Weather {
             6..18 => SUN_ICON,
             _ => MOON_ICON,
         })
-        .size(14)
+        .size(self.core.applet.suggested_size(true).0)
         .symbolic(true);
-        let temperature = cosmic::iced_widget::text(self.format_temperature());
+        let temperature = self.core.applet.text(self.format_temperature());
 
         let data = if self.core.applet.is_horizontal() {
             cosmic::Element::from(
                 cosmic::iced_widget::row![icon, temperature]
                     .align_y(cosmic::iced::alignment::Vertical::Center)
-                    .spacing(4),
+                    .spacing(4)
+                    .padding([0, 4]),
             )
         } else {
             cosmic::Element::from(
                 cosmic::iced_widget::column![icon, temperature]
                     .align_x(cosmic::iced::alignment::Horizontal::Center)
-                    .spacing(4),
+                    .spacing(4)
+                    .padding([4, 0]),
             )
         };
 
