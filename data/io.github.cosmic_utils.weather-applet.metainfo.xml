@@ -27,19 +27,15 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_1.png</image>
-      <caption>Weather information integrated into the COSMIC panel</caption>
+      <caption>Applet screenshot 1</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_2.png</image>
-      <caption>Current weather view during day</caption>
+      <caption>Applet screenshot 2</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_3.png</image>
-      <caption>Current weather view during night</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/cosmic-utils/cosmic-ext-applet-weather/main/data/applet_screenshot_4.png</image>
-      <caption>Weather applet configuration and settings panel</caption>
+      <caption>Applet screenshot 3</caption>
     </screenshot>
   </screenshots>
   <provides>
