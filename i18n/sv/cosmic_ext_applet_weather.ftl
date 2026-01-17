@@ -1,3 +1,4 @@
 latitude = Latitud
 longitude = Longitud
-fahrenheit-toggle = Ändra till Fahrenheit?
+temperature = Temperaturenhet
+ip-location-toggle = Identifiera plats automatiskt

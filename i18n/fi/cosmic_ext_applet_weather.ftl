@@ -1,3 +1,4 @@
 latitude = Leveysaste
 longitude = Pituusaste
-fahrenheit-toggle = Vaihtaa Fahrenheit-asteikolle?
+temperature = Lämpötilayksikkö
+ip-location-toggle = Tunnista sijainti automaattisesti

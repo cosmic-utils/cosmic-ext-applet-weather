@@ -1,3 +1,4 @@
-latitude = широта
-longitude = долгота
-fahrenheit-toggle = Переключить на Фаренгейт?
+latitude = Широта
+longitude = Долгота
+temperature = Единица температуры
+ip-location-toggle = Автоопределение местоположения

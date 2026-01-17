@@ -5,14 +5,13 @@ use cosmic::cosmic_config::{
 const CONFIG_VERSION: u64 = 1;
 
 pub const APP_ID: &str = "io.github.cosmic_utils.weather-applet";
-pub const SUN_ICON: &str = "io.github.cosmic_utils.weather-applet-symbolic-sun";
-pub const MOON_ICON: &str = "io.github.cosmic_utils.weather-applet-symbolic-moon";
 
 #[derive(Clone, Default, Debug, CosmicConfigEntry)]
 pub struct WeatherConfig {
     pub latitude: f64,
     pub longitude: f64,
     pub use_fahrenheit: bool,
+    pub use_ip_location: bool,
 }
 
 impl WeatherConfig {

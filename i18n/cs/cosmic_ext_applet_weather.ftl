@@ -1,3 +1,4 @@
 latitude = Zeměpisná šířka
 longitude = Zeměpisná délka
-fahrenheit-toggle = Přepnout na Fahrenheit?
+temperature = Jednotka teploty
+ip-location-toggle = Automatická detekce polohy

@@ -1,3 +1,4 @@
 latitude = Latitud
 longitude = Longitud
-fahrenheit-toggle = ¿Cambiar a Fahrenheit?
+temperature = Unidad de temperatura
+ip-location-toggle = Detectar ubicación automáticamente
