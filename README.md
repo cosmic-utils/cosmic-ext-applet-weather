@@ -12,10 +12,6 @@
     <img alt="Applet Screenshot" src="https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_3.png">
 </p>
 
-<p align="center">
-    <img alt="Applet Screenshot" src="https://github.com/cosmic-utils/cosmic-ext-applet-weather/blob/main/data/applet_screenshot_4.png">
-</p>
-
 ## Installation
 
 ### Flatpak
@@ -46,35 +42,7 @@ sudo just install
 
 ## Configuration
 
-The applet provides a graphical interface for entering coordinates and toggling the Fahrenheit scale. For manual configuration, follow the steps below.
-
-_Use the IP-API web service (https://ip-api.com/docs/api:json) to retrieve approximate coordinates, or alternatively, use mapping platforms like Google Maps to obtain accurate latitude and longitude._
-
-```sh
-cd ~/.config/cosmic/io.github.cosmic_utils.weather-applet/v1/
-```
-
-Add latitude:
-
-```
-touch latitude
-echo "12.123163" > latitude
-```
-
-Add longitude:
-
-```
-touch longitude
-echo "23.811234" > longitude
-```
-
-Toggle Fahrenheit:
-
-```
-touch use_fahrenheit
-echo "true" > use_fahrenheit
-```
-
+The applet provides a graphical interface for entering coordinates as well as a toggle to get it automatically based on your IP address. There is also a unit selector to choose between Celsius and Fahrenheit.
 To refresh the applet simply run `pkill cosmic-panel`
 
 ## Uninstall
