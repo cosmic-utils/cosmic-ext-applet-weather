@@ -237,15 +237,13 @@ impl cosmic::Application for Weather {
             cosmic::Element::from(
                 cosmic::iced_widget::row![icon, temp]
                     .align_y(cosmic::iced::alignment::Vertical::Center)
-                    .spacing(4)
-                    .padding([0, self.core.applet.suggested_padding(true).1]),
+                    .spacing(4),
             )
         } else {
             cosmic::Element::from(
                 cosmic::iced_widget::column![icon, temp]
                     .align_x(cosmic::iced::alignment::Horizontal::Center)
                     .spacing(4)
-                    .padding([self.core.applet.suggested_padding(true).0, 0]),
             )
         };
 
