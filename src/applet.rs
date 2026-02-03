@@ -10,6 +10,14 @@ pub fn run() -> cosmic::iced::Result {
     cosmic::applet::run::<Weather>(flags())
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct WeatherUpdate {
+    pub temp: i32,
+    pub icon: String,
+    pub city: Option<String>,
+    pub region: Option<String>,
+}
+
 struct Weather {
     core: cosmic::app::Core,
     popup: Option<cosmic::iced::window::Id>,
@@ -19,6 +27,8 @@ struct Weather {
     icon: String,
     latitude: String,
     longitude: String,
+    city: String,
+    region: String,
     use_fahrenheit: bool,
     use_ip_location: bool,
 }
@@ -28,19 +38,29 @@ impl Weather {
         if self.use_ip_location {
             cosmic::Task::perform(
                 async {
-                    let (lat, lon) = IpApi::get_location_from_ip().await?;
-                    WeatherApi::get_location_forecast(lat.to_string(), lon.to_string()).await
+                    let ip = IpApi::get_location_from_ip()
+                        .await
+                        .map_err(|e| format!("IP Location API Error: {}", e))?;
+                    let (temp, icon) =
+                        WeatherApi::get_location_forecast(ip.lat.to_string(), ip.lon.to_string())
+                            .await
+                            .map_err(|e| format!("Forecast API Error: {}", e))?;
+
+                    Ok(WeatherUpdate {
+                        temp,
+                        icon,
+                        city: Some(ip.city),
+                        region: Some(ip.regionName),
+                    })
                 },
-                |result| match result {
-                    Ok((temp, icon)) => {
-                        cosmic::action::Action::App(Message::UpdateApplet((temp, icon)))
-                    }
-                    Err(error) => {
-                        tracing::error!("Failed to get weather with IP location: {error:?}");
-                        cosmic::action::Action::App(Message::UpdateApplet((
-                            0,
-                            String::from("weather-clear"),
-                        )))
+                |result: Result<WeatherUpdate, String>| match result {
+                    Ok(update) => cosmic::action::Action::App(Message::UpdateApplet(update)),
+                    Err(e) => {
+                        tracing::error!("{}", e);
+                        cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
+                            icon: String::from("weather-clear"),
+                            ..Default::default()
+                        }))
                     }
                 },
             )
@@ -52,14 +72,18 @@ impl Weather {
                 ),
                 |result| match result {
                     Ok((temp, icon)) => {
-                        cosmic::action::Action::App(Message::UpdateApplet((temp, icon)))
+                        cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
+                            temp,
+                            icon,
+                            ..Default::default()
+                        }))
                     }
-                    Err(error) => {
-                        tracing::error!("Failed to get location forecast: {error:?}");
-                        cosmic::action::Action::App(Message::UpdateApplet((
-                            0,
-                            String::from("weather-clear"),
-                        )))
+                    Err(e) => {
+                        tracing::error!("Failed to get location forecast: {e:?}");
+                        cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
+                            icon: String::from("weather-clear"),
+                            ..Default::default()
+                        }))
                     }
                 },
             )
@@ -68,9 +92,18 @@ impl Weather {
 
     fn format_temperature(&self) -> String {
         if self.use_fahrenheit {
-            format!("{}°F", self.temperature * 9 / 5 + 32)
+            let fahrenheit = (self.temperature as f64 * 9.0 / 5.0 + 32.0).round() as i32;
+            format!("{fahrenheit}°F")
         } else {
             format!("{}°C", self.temperature)
+        }
+    }
+
+    fn location_display(&self) -> Option<String> {
+        if self.city.is_empty() && self.region.is_empty() {
+            None
+        } else {
+            Some(format!("{}, {}", self.city, self.region))
         }
     }
 }
@@ -80,7 +113,7 @@ pub enum Message {
     Tick,
     ToggleWindow,
     PopupClosed(cosmic::iced::window::Id),
-    UpdateApplet((i32, String)),
+    UpdateApplet(WeatherUpdate),
     UpdateLatitude(String),
     UpdateLongitude(String),
     ToggleFahrenheit(bool),
@@ -98,23 +131,22 @@ impl cosmic::Application for Weather {
         core: cosmic::app::Core,
         flags: Self::Flags,
     ) -> (Self, cosmic::app::Task<Self::Message>) {
-        let latitude = flags.config.latitude;
-        let longitude = flags.config.longitude;
-        let use_fahrenheit = flags.config.use_fahrenheit;
-        let use_ip_location = flags.config.use_ip_location;
+        let config = flags.config;
 
         (
             Self {
                 core,
                 popup: None,
-                config: flags.config,
+                latitude: format!("{:.4}", config.latitude),
+                longitude: format!("{:.4}", config.longitude),
+                use_fahrenheit: config.use_fahrenheit,
+                use_ip_location: config.use_ip_location,
+                config,
                 config_handler: flags.config_handler,
                 temperature: 0,
                 icon: String::from("weather-clear"),
-                latitude: format!("{:.4}", latitude),
-                longitude: format!("{:.4}", longitude),
-                use_fahrenheit,
-                use_ip_location,
+                city: String::new(),
+                region: String::new(),
             },
             cosmic::task::message(Message::Tick),
         )
@@ -142,34 +174,41 @@ impl cosmic::Application for Weather {
 
     fn update(&mut self, message: Message) -> cosmic::app::Task<Self::Message> {
         match message {
-            Message::UpdateApplet((temp, icon)) => {
-                self.temperature = temp;
-                self.icon = icon;
-            }
             Message::Tick => {
                 return self.update_weather_data();
+            }
+            Message::UpdateApplet(update) => {
+                self.icon = update.icon;
+                self.temperature = update.temp;
+
+                if let Some(city) = update.city {
+                    self.city = city;
+                }
+                if let Some(region) = update.region {
+                    self.region = region;
+                }
             }
             Message::ToggleWindow => {
                 if let Some(id) = self.popup.take() {
                     return cosmic::iced::platform_specific::shell::commands::popup::destroy_popup(
                         id,
                     );
-                } else {
-                    let new_id = cosmic::iced::window::Id::unique();
-                    self.popup.replace(new_id);
-
-                    let popup_settings = self.core.applet.get_popup_settings(
-                        self.core.main_window_id().unwrap(),
-                        new_id,
-                        None,
-                        None,
-                        None,
-                    );
-
-                    return cosmic::iced::platform_specific::shell::commands::popup::get_popup(
-                        popup_settings,
-                    );
                 }
+
+                let new_id = cosmic::iced::window::Id::unique();
+                self.popup.replace(new_id);
+
+                let popup_settings = self.core.applet.get_popup_settings(
+                    self.core.main_window_id().unwrap(),
+                    new_id,
+                    None,
+                    None,
+                    None,
+                );
+
+                return cosmic::iced::platform_specific::shell::commands::popup::get_popup(
+                    popup_settings,
+                );
             }
             Message::PopupClosed(id) => {
                 if self.popup.as_ref() == Some(&id) {
@@ -180,11 +219,11 @@ impl cosmic::Application for Weather {
                 self.latitude = value.clone();
 
                 if let Some(handler) = &self.config_handler
-                    && let Err(error) = self
+                    && let Err(e) = self
                         .config
                         .set_latitude(handler, value.parse::<f64>().unwrap_or_default())
                 {
-                    tracing::error!("{error}")
+                    tracing::error!("{e}");
                 }
 
                 return self.update_weather_data();
@@ -193,11 +232,11 @@ impl cosmic::Application for Weather {
                 self.longitude = value.clone();
 
                 if let Some(handler) = &self.config_handler
-                    && let Err(error) = self
+                    && let Err(e) = self
                         .config
                         .set_longitude(handler, value.parse::<f64>().unwrap_or_default())
                 {
-                    tracing::error!("{error}")
+                    tracing::error!("{e}");
                 }
 
                 return self.update_weather_data();
@@ -206,18 +245,18 @@ impl cosmic::Application for Weather {
                 self.use_fahrenheit = value;
 
                 if let Some(handler) = &self.config_handler
-                    && let Err(error) = self.config.set_use_fahrenheit(handler, value)
+                    && let Err(e) = self.config.set_use_fahrenheit(handler, value)
                 {
-                    tracing::error!("{error}")
+                    tracing::error!("{e}");
                 }
             }
             Message::ToggleIpLocation(value) => {
                 self.use_ip_location = value;
 
                 if let Some(handler) = &self.config_handler
-                    && let Err(error) = self.config.set_use_ip_location(handler, value)
+                    && let Err(e) = self.config.set_use_ip_location(handler, value)
                 {
-                    tracing::error!("{error}")
+                    tracing::error!("{e}");
                 }
 
                 return self.update_weather_data();
@@ -243,7 +282,7 @@ impl cosmic::Application for Weather {
             cosmic::Element::from(
                 cosmic::iced_widget::column![icon, temp]
                     .align_x(cosmic::iced::alignment::Horizontal::Center)
-                    .spacing(4)
+                    .spacing(4),
             )
         };
 
@@ -255,19 +294,91 @@ impl cosmic::Application for Weather {
     }
 
     fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<'_, Message> {
+        let mut data = cosmic::iced_widget::column![].padding([16, 0]);
+
+        // Weather header with icon, temperature, and location
+        let weather_icon = cosmic::widget::icon::from_name(self.icon.clone())
+            .size(48)
+            .symbolic(true);
+
+        let mut weather_info =
+            cosmic::iced_widget::column![cosmic::widget::text::title3(self.format_temperature()),]
+                .spacing(2);
+
+        if self.use_ip_location
+            && let Some(location) = self.location_display()
+        {
+            weather_info = weather_info.push(
+                cosmic::iced_widget::row![
+                    cosmic::widget::icon::from_name("mark-location-symbolic")
+                        .size(14)
+                        .symbolic(true),
+                    cosmic::widget::text::body(location),
+                ]
+                .spacing(4)
+                .align_y(cosmic::iced::alignment::Vertical::Center),
+            );
+        }
+
+        let header = cosmic::iced_widget::row![weather_icon, weather_info]
+            .spacing(12)
+            .align_y(cosmic::iced::alignment::Vertical::Center);
+
+        data =
+            data.push(cosmic::applet::padded_control(header))
+                .push(cosmic::applet::padded_control(
+                    cosmic::widget::divider::horizontal::default(),
+                ));
+
+        // IP location toggle
         let ip_location_toggler = cosmic::iced_widget::row![
             cosmic::widget::text(fl!("ip-location-toggle")),
             cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
             cosmic::widget::toggler(self.use_ip_location).on_toggle(Message::ToggleIpLocation),
         ];
 
+        data = data.push(cosmic::applet::padded_control(ip_location_toggler));
+
+        // Manual coordinates input (only when not using IP location)
+        if !self.use_ip_location {
+            data = data.push(cosmic::applet::padded_control(
+                cosmic::widget::divider::horizontal::default(),
+            ));
+
+            let latitude_col = cosmic::iced_widget::column![
+                cosmic::widget::text::body(fl!("latitude")),
+                cosmic::widget::text_input(fl!("latitude"), &self.latitude)
+                    .on_input(Message::UpdateLatitude)
+                    .width(cosmic::iced::Length::Fill),
+            ]
+            .spacing(4);
+
+            let longitude_col = cosmic::iced_widget::column![
+                cosmic::widget::text::body(fl!("longitude")),
+                cosmic::widget::text_input(fl!("longitude"), &self.longitude)
+                    .on_input(Message::UpdateLongitude)
+                    .width(cosmic::iced::Length::Fill),
+            ]
+            .spacing(4);
+
+            let location_row = cosmic::iced_widget::row![latitude_col, longitude_col].spacing(8);
+
+            data = data.push(cosmic::applet::padded_control(location_row));
+        }
+
+        data = data.push(cosmic::applet::padded_control(
+            cosmic::widget::divider::horizontal::default(),
+        ));
+
+        // Temperature unit toggle
         let celsius_btn = cosmic::widget::button::text("°C")
-            .class(if !self.use_fahrenheit {
-                cosmic::theme::Button::Suggested
-            } else {
+            .class(if self.use_fahrenheit {
                 cosmic::theme::Button::Standard
+            } else {
+                cosmic::theme::Button::Suggested
             })
             .on_press(Message::ToggleFahrenheit(false));
+
         let fahrenheit_btn = cosmic::widget::button::text("°F")
             .class(if self.use_fahrenheit {
                 cosmic::theme::Button::Suggested
@@ -284,38 +395,6 @@ impl cosmic::Application for Weather {
         ]
         .spacing(4)
         .align_y(cosmic::iced::alignment::Vertical::Center);
-
-        let mut data = cosmic::iced_widget::column![].padding([16, 0]);
-
-        data = data
-            .push(cosmic::applet::padded_control(ip_location_toggler))
-            .push(cosmic::applet::padded_control(
-                cosmic::widget::divider::horizontal::default(),
-            ));
-
-        if !self.use_ip_location {
-            let latitude_col = cosmic::iced_widget::column![
-                cosmic::widget::text::body(fl!("latitude")),
-                cosmic::widget::text_input(fl!("latitude"), &self.latitude)
-                    .on_input(Message::UpdateLatitude)
-                    .width(cosmic::iced::Length::Fill),
-            ]
-            .spacing(4);
-            let longitude_col = cosmic::iced_widget::column![
-                cosmic::widget::text::body(fl!("longitude")),
-                cosmic::widget::text_input(fl!("longitude"), &self.longitude)
-                    .on_input(Message::UpdateLongitude)
-                    .width(cosmic::iced::Length::Fill),
-            ]
-            .spacing(4);
-            let location_row = cosmic::iced_widget::row![latitude_col, longitude_col].spacing(8);
-
-            data = data
-                .push(cosmic::applet::padded_control(location_row))
-                .push(cosmic::applet::padded_control(
-                    cosmic::widget::divider::horizontal::default(),
-                ));
-        }
 
         data = data.push(cosmic::applet::padded_control(temperature_row));
 

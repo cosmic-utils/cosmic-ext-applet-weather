@@ -163,23 +163,26 @@ impl WeatherApi {
     }
 }
 
+#[allow(non_snake_case)]
 #[derive(Deserialize, Debug)]
 pub struct IpApi {
-    lat: f32,
-    lon: f32,
+    pub lat: f32,
+    pub lon: f32,
+    pub city: String,
+    pub regionName: String,
 }
 
 impl IpApi {
-    pub async fn get_location_from_ip() -> Result<(f32, f32), reqwest::Error> {
-        let url = "http://ip-api.com/json?fields=lat,lon";
+    pub async fn get_location_from_ip() -> Result<IpApi, reqwest::Error> {
+        let url = "http://ip-api.com/json?fields=lat,lon,city,regionName";
 
         let request_builder = reqwest::Client::new()
             .get(url)
             .header(header::USER_AGENT, APP_ID);
 
         let response = request_builder.send().await?;
-        let data = response.json::<IpApi>().await?;
+        let response = response.json::<IpApi>().await?;
 
-        Ok((data.lat, data.lon))
+        Ok(response)
     }
 }
