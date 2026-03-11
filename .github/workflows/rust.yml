@@ -16,11 +16,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install dependencies
+    - name: Install required system libraries
       run: sudo apt install libxkbcommon-dev
-    - name: Build
-      run: cargo build --verbose
-    - name: Check lint
-      run: cargo clippy --verbose -- -D warnings
+    - name: Install Rust
+      run: rustup toolchain install stable
+    - name: Cache Rust dependencies
+      uses: Swatinem/rust-cache@v2
+    - name: Check
+      run: cargo check
     - name: Check formatting
       run: cargo fmt --check
+    - name: Check lint
+      run: cargo clippy --verbose -- -D warnings
