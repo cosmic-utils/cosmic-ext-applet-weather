@@ -169,7 +169,7 @@ impl cosmic::Application for Weather {
         cosmic::iced::time::every(Duration::from_secs(60)).map(|_| Message::Tick)
     }
 
-    fn style(&self) -> Option<cosmic::iced_runtime::Appearance> {
+    fn style(&self) -> Option<cosmic::iced::theme::Style> {
         Some(cosmic::applet::style())
     }
 
@@ -346,7 +346,7 @@ impl cosmic::Application for Weather {
         // IP location toggle
         let ip_location_toggler = cosmic::iced_widget::row![
             cosmic::widget::text(fl!("ip-location-toggle")),
-            cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
+            cosmic::widget::Space::new().width(cosmic::iced::Length::Fill),
             cosmic::widget::toggler(self.use_ip_location).on_toggle(Message::ToggleIpLocation),
         ];
 
@@ -402,7 +402,7 @@ impl cosmic::Application for Weather {
 
         let temperature_row = cosmic::iced_widget::row![
             cosmic::widget::text(fl!("temperature")),
-            cosmic::widget::Space::with_width(cosmic::iced::Length::Fill),
+            cosmic::widget::Space::new().width(cosmic::iced::Length::Fill),
             celsius_btn,
             fahrenheit_btn,
         ]

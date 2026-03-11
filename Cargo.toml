@@ -12,7 +12,7 @@ lto = "fat"
 opt-level = 3
 
 [dependencies]
-chrono = { version = "0.4.43", default-features = false }
+chrono = { version = "0.4.44", default-features = false }
 i18n-embed = { version = "0.16.0", default-features = false, features = [
 	"rust-embed",
 	"fluent-system",
@@ -22,7 +22,7 @@ i18n-embed-fl = { version = "0.10.0", default-features = false }
 libcosmic = { git = "https://github.com/pop-os/libcosmic", default-features = false, features = [
 	"applet",
 ] }
-reqwest = { version = "0.13.1", default-features = true, features = [
+reqwest = { version = "0.13.2", default-features = true, features = [
 	"json",
 	"default-tls",
 ] }
