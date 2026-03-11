@@ -14,6 +14,7 @@ pub fn run() -> cosmic::iced::Result {
 pub struct WeatherUpdate {
     pub temp: i32,
     pub icon: String,
+    pub uv: f32,
     pub city: Option<String>,
     pub region: Option<String>,
 }
@@ -25,6 +26,7 @@ struct Weather {
     config_handler: Option<cosmic::cosmic_config::Config>,
     temperature: i32,
     icon: String,
+    uv: f32,
     latitude: String,
     longitude: String,
     city: String,
@@ -41,14 +43,15 @@ impl Weather {
                     let ip = IpApi::get_location_from_ip()
                         .await
                         .map_err(|e| format!("IP Location API Error: {}", e))?;
-                    let (temp, icon) =
+                    let weather =
                         WeatherApi::get_location_forecast(ip.lat.to_string(), ip.lon.to_string())
                             .await
                             .map_err(|e| format!("Forecast API Error: {}", e))?;
 
                     Ok(WeatherUpdate {
-                        temp,
-                        icon,
+                        temp: weather.temp,
+                        icon: weather.icon,
+                        uv: weather.uv,
                         city: Some(ip.city),
                         region: Some(ip.regionName),
                     })
@@ -71,10 +74,11 @@ impl Weather {
                     self.config.longitude.to_string(),
                 ),
                 |result| match result {
-                    Ok((temp, icon)) => {
+                    Ok(weather) => {
                         cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
-                            temp,
-                            icon,
+                            temp: weather.temp,
+                            icon: weather.icon,
+                            uv: weather.uv,
                             ..Default::default()
                         }))
                     }
@@ -145,6 +149,7 @@ impl cosmic::Application for Weather {
                 config_handler: flags.config_handler,
                 temperature: 0,
                 icon: String::from("weather-clear"),
+                uv: 0.0,
                 city: String::new(),
                 region: String::new(),
             },
@@ -180,6 +185,7 @@ impl cosmic::Application for Weather {
             Message::UpdateApplet(update) => {
                 self.icon = update.icon;
                 self.temperature = update.temp;
+                self.uv = update.uv;
 
                 if let Some(city) = update.city {
                     self.city = city;
@@ -296,14 +302,14 @@ impl cosmic::Application for Weather {
     fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<'_, Message> {
         let mut data = cosmic::iced_widget::column![].padding([16, 0]);
 
-        // Weather header with icon, temperature, and location
+        // Weather header with icon, temperature, location, and UV index
         let weather_icon = cosmic::widget::icon::from_name(self.icon.clone())
             .size(48)
             .symbolic(true);
 
         let mut weather_info =
-            cosmic::iced_widget::column![cosmic::widget::text::title3(self.format_temperature()),]
-                .spacing(2);
+            cosmic::iced_widget::column![cosmic::widget::text::title3(self.format_temperature())]
+                .spacing(4);
 
         if self.use_ip_location
             && let Some(location) = self.location_display()
@@ -318,6 +324,13 @@ impl cosmic::Application for Weather {
                 .spacing(4)
                 .align_y(cosmic::iced::alignment::Vertical::Center),
             );
+        }
+
+        if self.uv > 0.0 {
+            weather_info = weather_info.push(cosmic::widget::text::caption(format!(
+                "UV Index: {:.1}",
+                self.uv
+            )));
         }
 
         let header = cosmic::iced_widget::row![weather_icon, weather_info]

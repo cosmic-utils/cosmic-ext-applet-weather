@@ -34,12 +34,13 @@ struct Instant {
 #[derive(Default, Deserialize)]
 #[serde(default)]
 struct InstantDetails {
-    air_pressure_at_sea_level: f64,
-    air_temperature: f64,
-    cloud_area_fraction: f64,
-    relative_humidity: f64,
-    wind_from_direction: f64,
-    wind_speed: f64,
+    air_pressure_at_sea_level: f32,
+    air_temperature: f32,
+    cloud_area_fraction: f32,
+    relative_humidity: f32,
+    wind_from_direction: f32,
+    wind_speed: f32,
+    ultraviolet_index_clear_sky: f32,
 }
 
 #[derive(Default, Deserialize)]
@@ -54,13 +55,29 @@ struct Summary {
     symbol_code: String,
 }
 
+pub struct WeatherApiResponse {
+    pub temp: i32,
+    pub icon: String,
+    pub uv: f32,
+}
+
+impl Default for WeatherApiResponse {
+    fn default() -> Self {
+        Self {
+            temp: 0,
+            icon: String::from("weather-clear"),
+            uv: 0.0,
+        }
+    }
+}
+
 impl WeatherApi {
     pub async fn get_location_forecast(
         latitude: String,
         longitude: String,
-    ) -> Result<(i32, String), reqwest::Error> {
+    ) -> Result<WeatherApiResponse, reqwest::Error> {
         let url = format!(
-            "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={latitude}&lon={longitude}",
+            "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat={latitude}&lon={longitude}",
         );
 
         let request_builder = reqwest::Client::new()
@@ -70,19 +87,23 @@ impl WeatherApi {
         let response = request_builder.send().await?;
         let data = response.json::<WeatherApi>().await?;
 
-        let (temp, icon) = data
+        let weather = data
             .properties
             .timeseries
             .first()
             .map(|ts| {
-                let temp = ts.data.instant.details.air_temperature as i32;
-                let icon = Self::symbol_code_to_icon(&ts.data.next_1_hours.summary.symbol_code)
-                    .to_string();
-                (temp, icon)
-            })
-            .unwrap_or_else(|| (0, String::from("weather-clear")));
+                let details = &ts.data.instant.details;
 
-        Ok((temp, icon))
+                WeatherApiResponse {
+                    temp: details.air_temperature as i32,
+                    icon: Self::symbol_code_to_icon(&ts.data.next_1_hours.summary.symbol_code)
+                        .to_string(),
+                    uv: details.ultraviolet_index_clear_sky,
+                }
+            })
+            .unwrap_or(WeatherApiResponse::default());
+
+        Ok(weather)
     }
 
     /// Maps met.no/MET Norway symbol codes to freedesktop.org weather icon names
