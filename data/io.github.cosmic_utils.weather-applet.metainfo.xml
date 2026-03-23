@@ -41,6 +41,18 @@
       <caption xml:lang="cs">Snímek zobrazující applet 3</caption>
     </screenshot>
   </screenshots>
+  <releases>
+    <release version="0.2.0" date="2026-03-11">
+      <description>
+        <p>Add UV index, city and region display, and IP-based location detection</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2025-06-07">
+      <description>
+        <p>Initial release with real-time weather conditions for the COSMIC panel</p>
+      </description>
+    </release>
+  </releases>
   <provides>
     <id>com.system76.CosmicApplet</id>
     <binaries>
