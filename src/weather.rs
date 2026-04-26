@@ -121,13 +121,7 @@ impl WeatherApi {
 
         match base {
             // Clear sky
-            "clearsky" => {
-                if is_night {
-                    "weather-clear-night"
-                } else {
-                    "weather-clear"
-                }
-            }
+            "clearsky" if is_night => "weather-clear-night",
 
             // Partly cloudy / fair
             "fair" | "partlycloudy" => {
