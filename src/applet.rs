@@ -1,5 +1,7 @@
 use std::time::Duration;
 
+use cosmic::iced::{Rectangle, Size, Subscription, event::listen_with};
+
 use crate::{
     config::{APP_ID, Flags, WeatherConfig, flags},
     fl,
@@ -33,6 +35,7 @@ struct Weather {
     region: String,
     use_fahrenheit: bool,
     use_ip_location: bool,
+    size: Size,
 }
 
 impl Weather {
@@ -114,6 +117,7 @@ impl Weather {
 
 #[derive(Debug, Clone)]
 pub enum Message {
+    Size(Size),
     Tick,
     ToggleWindow,
     PopupClosed(cosmic::iced::window::Id),
@@ -152,6 +156,10 @@ impl cosmic::Application for Weather {
                 uv: 0.0,
                 city: String::new(),
                 region: String::new(),
+                size: Size {
+                    width: 10.,
+                    height: 10.,
+                },
             },
             cosmic::task::message(Message::Tick),
         )
@@ -166,7 +174,21 @@ impl cosmic::Application for Weather {
     }
 
     fn subscription(&self) -> cosmic::iced::Subscription<Message> {
-        cosmic::iced::time::every(Duration::from_secs(60)).map(|_| Message::Tick)
+        Subscription::batch([
+            listen_with(|event, _status, id| {
+                if let cosmic::iced::Event::Window(
+                    cosmic::iced::window::Event::Resized(size)
+                    | cosmic::iced::window::Event::Opened { position: _, size },
+                ) = event
+                    && id == cosmic::iced::window::Id::RESERVED
+                {
+                    Some(Message::Size(size))
+                } else {
+                    None
+                }
+            }),
+            cosmic::iced::time::every(Duration::from_secs(60)).map(|_| Message::Tick),
+        ])
     }
 
     fn style(&self) -> Option<cosmic::iced::theme::Style> {
@@ -204,13 +226,19 @@ impl cosmic::Application for Weather {
                 let new_id = cosmic::iced::window::Id::unique();
                 self.popup.replace(new_id);
 
-                let popup_settings = self.core.applet.get_popup_settings(
+                let mut popup_settings = self.core.applet.get_popup_settings(
                     self.core.main_window_id().unwrap(),
                     new_id,
                     None,
                     None,
                     None,
                 );
+                popup_settings.positioner.anchor_rect = Rectangle::<i32> {
+                    x: 0,
+                    y: 0,
+                    width: self.size.width as i32,
+                    height: self.size.height as i32,
+                };
 
                 return cosmic::iced::platform_specific::shell::commands::popup::get_popup(
                     popup_settings,
@@ -267,6 +295,9 @@ impl cosmic::Application for Weather {
 
                 return self.update_weather_data();
             }
+            Message::Size(size) => {
+                self.size = size;
+            }
         };
 
         cosmic::Task::none()
@@ -280,13 +311,17 @@ impl cosmic::Application for Weather {
 
         let data = if self.core.applet.is_horizontal() {
             cosmic::Element::from(
-                cosmic::iced_widget::row![icon, temp]
+                cosmic::widget::row::with_capacity(2)
+                    .push(icon)
+                    .push(temp)
                     .align_y(cosmic::iced::alignment::Vertical::Center)
                     .spacing(4),
             )
         } else {
             cosmic::Element::from(
-                cosmic::iced_widget::column![icon, temp]
+                cosmic::iced::widget::column::with_capacity(2)
+                    .push(icon)
+                    .push(temp)
                     .align_x(cosmic::iced::alignment::Horizontal::Center)
                     .spacing(4),
             )
@@ -300,29 +335,30 @@ impl cosmic::Application for Weather {
     }
 
     fn view_window(&self, _id: cosmic::iced::window::Id) -> cosmic::Element<'_, Message> {
-        let mut data = cosmic::iced_widget::column![].padding([16, 0]);
+        let mut data = cosmic::iced::widget::column::with_capacity(10).padding([16, 0]);
 
         // Weather header with icon, temperature, location, and UV index
         let weather_icon = cosmic::widget::icon::from_name(self.icon.clone())
             .size(48)
             .symbolic(true);
 
-        let mut weather_info =
-            cosmic::iced_widget::column![cosmic::widget::text::title3(self.format_temperature())]
-                .spacing(4);
+        let mut weather_info = cosmic::iced::widget::column::with_capacity(3)
+            .push(cosmic::widget::text::title3(self.format_temperature()))
+            .spacing(4);
 
         if self.use_ip_location
             && let Some(location) = self.location_display()
         {
             weather_info = weather_info.push(
-                cosmic::iced_widget::row![
-                    cosmic::widget::icon::from_name("mark-location-symbolic")
-                        .size(14)
-                        .symbolic(true),
-                    cosmic::widget::text::body(location),
-                ]
-                .spacing(4)
-                .align_y(cosmic::iced::alignment::Vertical::Center),
+                cosmic::widget::row::with_capacity(2)
+                    .push(
+                        cosmic::widget::icon::from_name("mark-location-symbolic")
+                            .size(14)
+                            .symbolic(true),
+                    )
+                    .push(cosmic::widget::text::body(location))
+                    .spacing(4)
+                    .align_y(cosmic::iced::alignment::Vertical::Center),
             );
         }
 
@@ -333,7 +369,9 @@ impl cosmic::Application for Weather {
             )));
         }
 
-        let header = cosmic::iced_widget::row![weather_icon, weather_info]
+        let header = cosmic::widget::row::with_capacity(2)
+            .push(weather_icon)
+            .push(weather_info)
             .spacing(12)
             .align_y(cosmic::iced::alignment::Vertical::Center);
 
@@ -344,11 +382,12 @@ impl cosmic::Application for Weather {
                 ));
 
         // IP location toggle
-        let ip_location_toggler = cosmic::iced_widget::row![
-            cosmic::widget::text(fl!("ip-location-toggle")),
-            cosmic::widget::Space::new().width(cosmic::iced::Length::Fill),
-            cosmic::widget::toggler(self.use_ip_location).on_toggle(Message::ToggleIpLocation),
-        ];
+        let ip_location_toggler = cosmic::widget::row::with_capacity(3)
+            .push(cosmic::widget::text(fl!("ip-location-toggle")))
+            .push(cosmic::widget::Space::new().width(cosmic::iced::Length::Fill))
+            .push(
+                cosmic::widget::toggler(self.use_ip_location).on_toggle(Message::ToggleIpLocation),
+            );
 
         data = data.push(cosmic::applet::padded_control(ip_location_toggler));
 
@@ -358,23 +397,28 @@ impl cosmic::Application for Weather {
                 cosmic::widget::divider::horizontal::default(),
             ));
 
-            let latitude_col = cosmic::iced_widget::column![
-                cosmic::widget::text::body(fl!("latitude")),
-                cosmic::widget::text_input(fl!("latitude"), &self.latitude)
-                    .on_input(Message::UpdateLatitude)
-                    .width(cosmic::iced::Length::Fill),
-            ]
-            .spacing(4);
+            let latitude_col = cosmic::iced::widget::column::with_capacity(2)
+                .push(cosmic::widget::text::body(fl!("latitude")))
+                .push(
+                    cosmic::widget::text_input(fl!("latitude"), &self.latitude)
+                        .on_input(Message::UpdateLatitude)
+                        .width(cosmic::iced::Length::Fill),
+                )
+                .spacing(4);
 
-            let longitude_col = cosmic::iced_widget::column![
-                cosmic::widget::text::body(fl!("longitude")),
-                cosmic::widget::text_input(fl!("longitude"), &self.longitude)
-                    .on_input(Message::UpdateLongitude)
-                    .width(cosmic::iced::Length::Fill),
-            ]
-            .spacing(4);
+            let longitude_col = cosmic::iced::widget::column::with_capacity(2)
+                .push(cosmic::widget::text::body(fl!("longitude")))
+                .push(
+                    cosmic::widget::text_input(fl!("longitude"), &self.longitude)
+                        .on_input(Message::UpdateLongitude)
+                        .width(cosmic::iced::Length::Fill),
+                )
+                .spacing(4);
 
-            let location_row = cosmic::iced_widget::row![latitude_col, longitude_col].spacing(8);
+            let location_row = cosmic::widget::row::with_capacity(2)
+                .push(latitude_col)
+                .push(longitude_col)
+                .spacing(8);
 
             data = data.push(cosmic::applet::padded_control(location_row));
         }
@@ -400,14 +444,13 @@ impl cosmic::Application for Weather {
             })
             .on_press(Message::ToggleFahrenheit(true));
 
-        let temperature_row = cosmic::iced_widget::row![
-            cosmic::widget::text(fl!("temperature")),
-            cosmic::widget::Space::new().width(cosmic::iced::Length::Fill),
-            celsius_btn,
-            fahrenheit_btn,
-        ]
-        .spacing(4)
-        .align_y(cosmic::iced::alignment::Vertical::Center);
+        let temperature_row = cosmic::widget::row::with_capacity(4)
+            .push(cosmic::widget::text(fl!("temperature")))
+            .push(cosmic::widget::Space::new().width(cosmic::iced::Length::Fill))
+            .push(celsius_btn)
+            .push(fahrenheit_btn)
+            .spacing(4)
+            .align_y(cosmic::iced::alignment::Vertical::Center);
 
         data = data.push(cosmic::applet::padded_control(temperature_row));
 
