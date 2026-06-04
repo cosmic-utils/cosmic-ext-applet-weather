@@ -363,10 +363,23 @@ impl cosmic::Application for Weather {
         }
 
         if self.uv > 0.0 {
-            weather_info = weather_info.push(cosmic::widget::text::caption(format!(
-                "UV Index: {:.1}",
-                self.uv
-            )));
+            // Colour-code the UV index: white (low), yellow (moderate), red (high).
+            let uv_colour = if self.uv < 3.0 {
+                cosmic::iced::Color::WHITE
+            } else if self.uv < 6.0 {
+                cosmic::iced::Color::from_rgb(1.0, 0.85, 0.0)
+            } else {
+                cosmic::iced::Color::from_rgb(0.9, 0.1, 0.1)
+            };
+
+            weather_info = weather_info.push(
+                cosmic::widget::row::with_capacity(2)
+                    .push(cosmic::widget::text::caption("UV Index: "))
+                    .push(
+                        cosmic::widget::text::caption(format!("{:.1}", self.uv))
+                            .class(cosmic::theme::Text::Color(uv_colour)),
+                    ),
+            );
         }
 
         let header = cosmic::widget::row::with_capacity(2)
