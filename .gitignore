@@ -1,7 +1,6 @@
 /target
 
 # Flatpak stuff
-/flatpak
 cargo-sources.json
 .flatpak-builder
 /repo/
