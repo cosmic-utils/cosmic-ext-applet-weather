@@ -1,4 +1,5 @@
-use reqwest::header;
+use std::time::Duration;
+
 use serde::Deserialize;
 
 use crate::config::APP_ID;
@@ -72,20 +73,21 @@ impl Default for WeatherApiResponse {
 }
 
 impl WeatherApi {
-    pub async fn get_location_forecast(
+    pub fn get_location_forecast(
         latitude: String,
         longitude: String,
-    ) -> Result<WeatherApiResponse, reqwest::Error> {
+    ) -> Result<WeatherApiResponse, attohttpc::Error> {
         let url = format!(
             "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat={latitude}&lon={longitude}",
         );
 
-        let request_builder = reqwest::Client::new()
-            .get(url)
-            .header(header::USER_AGENT, APP_ID);
+        let response = attohttpc::get(url)
+            .header("User-Agent", APP_ID)
+            .timeout(Duration::from_secs(5))
+            .send()?
+            .error_for_status()?;
 
-        let response = request_builder.send().await?;
-        let data = response.json::<WeatherApi>().await?;
+        let data = response.json::<WeatherApi>()?;
 
         let weather = data
             .properties
@@ -188,16 +190,15 @@ pub struct IpApi {
 }
 
 impl IpApi {
-    pub async fn get_location_from_ip() -> Result<IpApi, reqwest::Error> {
+    pub fn get_location_from_ip() -> Result<IpApi, attohttpc::Error> {
         let url = "http://ip-api.com/json?fields=lat,lon,city,regionName";
 
-        let request_builder = reqwest::Client::new()
-            .get(url)
-            .header(header::USER_AGENT, APP_ID);
+        let response = attohttpc::get(url)
+            .header("User-Agent", APP_ID)
+            .timeout(Duration::from_secs(5))
+            .send()?
+            .error_for_status()?;
 
-        let response = request_builder.send().await?;
-        let response = response.json::<IpApi>().await?;
-
-        Ok(response)
+        response.json::<IpApi>()
     }
 }
