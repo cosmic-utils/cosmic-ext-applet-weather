@@ -74,9 +74,7 @@ impl Weather {
                 self.config.longitude.to_string(),
             );
             cosmic::Task::perform(
-                async move {
-                    WeatherApi::get_location_forecast(latitude, longitude)
-                },
+                async move { WeatherApi::get_location_forecast(latitude, longitude) },
                 |result| match result {
                     Ok(weather) => {
                         cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {

@@ -2,9 +2,11 @@
 Name=Simple Weather Monitor
 Name[cs]=Jednoduchý monitor počasí
 Name[es]=Monitor meteorológico simple
+Name[pl]=Prosty Monitor Pogody
 Keywords=Cosmic;Iced;applet;weather;monitor;
 Keywords[cs]=Cosmic;Iced;applet;počasí;monitor;sledování;teplota;teploty;
 Keywords[es]=Cosmic;Iced;applet;tiempo;monitor;temperatura;
+Keywords[pl]=Cosmic;Iced;aplet;prognoza;monitor;temperatura;pogoda;
 Categories=Cosmic;Iced;
 
 Type=Application
