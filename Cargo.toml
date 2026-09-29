@@ -21,9 +21,9 @@ i18n-embed-fl = { version = "0.10.1", default-features = false }
 libcosmic = { git = "https://github.com/pop-os/libcosmic", default-features = false, features = [
 	"applet",
 ] }
-attohttpc = { version = "0.31.0", default-features = false, features = [
+reqwest = { version = "0.13.4", default-features = true, features = [
 	"json",
-	"tls-rustls-webpki-roots",
+	"default-tls",
 ] }
 rust-embed = { version = "8.12.0", default-features = false }
 serde = "1.0.229"

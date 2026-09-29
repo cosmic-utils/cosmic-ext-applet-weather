@@ -42,11 +42,13 @@ impl Weather {
     fn update_weather_data(&mut self) -> cosmic::app::Task<Message> {
         if self.use_ip_location {
             cosmic::Task::perform(
-                async move {
+                async {
                     let ip = IpApi::get_location_from_ip()
+                        .await
                         .map_err(|e| format!("IP Location API Error: {}", e))?;
                     let weather =
                         WeatherApi::get_location_forecast(ip.lat.to_string(), ip.lon.to_string())
+                            .await
                             .map_err(|e| format!("Forecast API Error: {}", e))?;
 
                     Ok(WeatherUpdate {
@@ -69,12 +71,11 @@ impl Weather {
                 },
             )
         } else {
-            let (latitude, longitude) = (
-                self.config.latitude.to_string(),
-                self.config.longitude.to_string(),
-            );
             cosmic::Task::perform(
-                async move { WeatherApi::get_location_forecast(latitude, longitude) },
+                WeatherApi::get_location_forecast(
+                    self.config.latitude.to_string(),
+                    self.config.longitude.to_string(),
+                ),
                 |result| match result {
                     Ok(weather) => {
                         cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
