@@ -15,6 +15,7 @@ pub fn run() -> cosmic::iced::Result {
 #[derive(Debug, Clone, Default)]
 pub struct WeatherUpdate {
     pub temp: i32,
+    pub apparent_temp: i32,
     pub icon: String,
     pub uv: f32,
     pub city: Option<String>,
@@ -35,6 +36,8 @@ struct Weather {
     region: String,
     use_fahrenheit: bool,
     use_ip_location: bool,
+    apparent_temperature: i32,
+    use_apparent_temperature: bool,
     size: Size,
 }
 
@@ -53,6 +56,7 @@ impl Weather {
 
                     Ok(WeatherUpdate {
                         temp: weather.temp,
+                        apparent_temp: weather.apparent_temp,
                         icon: weather.icon,
                         uv: weather.uv,
                         city: Some(ip.city),
@@ -80,6 +84,7 @@ impl Weather {
                     Ok(weather) => {
                         cosmic::action::Action::App(Message::UpdateApplet(WeatherUpdate {
                             temp: weather.temp,
+                            apparent_temp: weather.apparent_temp,
                             icon: weather.icon,
                             uv: weather.uv,
                             ..Default::default()
@@ -98,11 +103,17 @@ impl Weather {
     }
 
     fn format_temperature(&self) -> String {
+        let celsius = if self.use_apparent_temperature {
+            self.apparent_temperature
+        } else {
+            self.temperature
+        };
+
         if self.use_fahrenheit {
-            let fahrenheit = (self.temperature as f64 * 9.0 / 5.0 + 32.0).round() as i32;
+            let fahrenheit = (celsius as f64 * 9.0 / 5.0 + 32.0).round() as i32;
             format!("{fahrenheit}°F")
         } else {
-            format!("{}°C", self.temperature)
+            format!("{}°C", celsius)
         }
     }
 
@@ -126,6 +137,7 @@ pub enum Message {
     UpdateLongitude(String),
     ToggleFahrenheit(bool),
     ToggleIpLocation(bool),
+    ToggleApparentTemperature(bool),
 }
 
 impl cosmic::Application for Weather {
@@ -149,9 +161,11 @@ impl cosmic::Application for Weather {
                 longitude: format!("{:.4}", config.longitude),
                 use_fahrenheit: config.use_fahrenheit,
                 use_ip_location: config.use_ip_location,
+                use_apparent_temperature: config.use_apparent_temperature,
                 config,
                 config_handler: flags.config_handler,
                 temperature: 0,
+                apparent_temperature: 0,
                 icon: String::from("weather-clear"),
                 uv: 0.0,
                 city: String::new(),
@@ -207,6 +221,7 @@ impl cosmic::Application for Weather {
             Message::UpdateApplet(update) => {
                 self.icon = update.icon;
                 self.temperature = update.temp;
+                self.apparent_temperature = update.apparent_temp;
                 self.uv = update.uv;
 
                 if let Some(city) = update.city {
@@ -294,6 +309,15 @@ impl cosmic::Application for Weather {
                 }
 
                 return self.update_weather_data();
+            }
+            Message::ToggleApparentTemperature(value) => {
+                self.use_apparent_temperature = value;
+
+                if let Some(handler) = &self.config_handler
+                    && let Err(e) = self.config.set_use_apparent_temperature(handler, value)
+                {
+                    tracing::error!("{e}");
+                }
             }
             Message::Size(size) => {
                 self.size = size;
@@ -403,6 +427,17 @@ impl cosmic::Application for Weather {
             );
 
         data = data.push(cosmic::applet::padded_control(ip_location_toggler));
+
+        // Apparent temperature toggle (shows "feels like" instead of actual temperature)
+        data = data.push(cosmic::applet::padded_control(
+            cosmic::widget::row::with_capacity(3)
+                .push(cosmic::widget::text(fl!("apparent-temperature")))
+                .push(cosmic::widget::Space::new().width(cosmic::iced::Length::Fill))
+                .push(
+                    cosmic::widget::toggler(self.use_apparent_temperature)
+                        .on_toggle(Message::ToggleApparentTemperature),
+                ),
+        ));
 
         // Manual coordinates input (only when not using IP location)
         if !self.use_ip_location {

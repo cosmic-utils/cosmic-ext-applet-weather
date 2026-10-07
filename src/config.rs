@@ -12,6 +12,7 @@ pub struct WeatherConfig {
     pub longitude: f64,
     pub use_fahrenheit: bool,
     pub use_ip_location: bool,
+    pub use_apparent_temperature: bool,
 }
 
 impl WeatherConfig {
