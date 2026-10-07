@@ -31,7 +31,7 @@ struct Instant {
     details: InstantDetails,
 }
 
-#[derive(Default, Deserialize, Debug)]
+#[derive(Default, Deserialize)]
 #[serde(default)]
 struct InstantDetails {
     air_pressure_at_sea_level: f32,
@@ -96,7 +96,6 @@ impl WeatherApi {
             .first()
             .map(|ts| {
                 let details = &ts.data.instant.details;
-                eprintln!("{:#?}", details);
 
                 WeatherApiResponse {
                     temp: details.air_temperature as i32,
